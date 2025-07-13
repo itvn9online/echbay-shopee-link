@@ -31,7 +31,7 @@ function echbay_shopee_link_button()
     // Lấy đường dẫn Shopee từ custom field
     $shopee_url = get_field('shopee_link', get_the_ID());
     if (!empty($shopee_url)) {
-        echo '<a href="' . $shopee_url . '" target="_blank" class="button satoso-shopee_link" rel="nofollow">Mua ngay tại Shopee</a>';
+        echo '<a href="' . $shopee_url . '" target="_blank" class="button echbay-shopee_link" rel="nofollow">Mua ngay tại Shopee</a>';
     }
 }
 

@@ -16,14 +16,17 @@ Plugin này sẽ hiển thị nút link Shopee trên trang chi tiết sản ph�
 ## Cài đặt
 
 ### Bước 1: Cài đặt plugin yêu cầu
+
 1. Cài đặt và kích hoạt **WooCommerce**
 2. Cài đặt và kích hoạt **Advanced Custom Fields**
 
 ### Bước 2: Cài đặt plugin EchBay Shopee Link
+
 1. Upload thư mục `echbay-shopee-link` vào `/wp-content/plugins/`
 2. Kích hoạt plugin trong WordPress Admin
 
 ### Bước 3: Tạo Custom Field
+
 1. Vào **Custom Fields > Field Groups** trong admin
 2. Tạo field group mới với tên "Shopee Link"
 3. Thêm field:
@@ -54,7 +57,7 @@ Plugin này sẽ hiển thị nút link Shopee trên trang chi tiết sản ph�
 
 ```php
 // Thay đổi text nút
-echo '<a href="' . $shopee_url . '" target="_blank" class="button satoso-shopee_link" rel="nofollow">Text mới</a>';
+echo '<a href="' . $shopee_url . '" target="_blank" class="button echbay-shopee_link" rel="nofollow">Text mới</a>';
 
 // Thay đổi vị trí (priority)
 add_action('woocommerce_single_product_summary', 'echbay_shopee_link_button', 33);
@@ -62,15 +65,15 @@ add_action('woocommerce_single_product_summary', 'echbay_shopee_link_button', 33
 
 ## CSS Class
 
-Nút có class `satoso-shopee_link` để custom CSS:
+Nút có class `echbay-shopee_link` để custom CSS:
 
 ```css
-.satoso-shopee_link {
-    background: #ee4d2d !important;
-    color: white !important;
-    border: none !important;
-    padding: 10px 20px !important;
-    border-radius: 5px !important;
+.echbay-shopee_link {
+	background: #ee4d2d !important;
+	color: white !important;
+	border: none !important;
+	padding: 10px 20px !important;
+	border-radius: 5px !important;
 }
 ```
 
@@ -91,6 +94,7 @@ echbay-shopee-link/
 ## Hỗ trợ
 
 Nếu có vấn đề, kiểm tra:
+
 1. WooCommerce đã được kích hoạt chưa?
 2. Advanced Custom Fields đã được kích hoạt chưa?
 3. Custom field `shopee_link` đã được tạo chưa?
