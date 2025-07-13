@@ -99,3 +99,13 @@ Nếu có vấn đề, kiểm tra:
 2. Advanced Custom Fields đã được kích hoạt chưa?
 3. Custom field `shopee_link` đã được tạo chưa?
 4. Sản phẩm đã có URL Shopee chưa?
+
+## Changelog
+
+### Version 1.0.0 (2025-07-14)
+
+- Phiên bản đầu tiên
+- Thêm nút "Mua ngay tại Shopee" vào trang sản phẩm
+- Tích hợp với Advanced Custom Fields
+- Tính năng auto-update từ GitHub
+- Sử dụng file VERSION để kiểm tra phiên bản mới

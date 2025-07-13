@@ -50,7 +50,7 @@ class EchBayShopeeLink_GitHub_Updater
         $this->plugin_slug = plugin_basename($plugin_file);
         $this->github_user = 'itvn9online'; // Thay bằng GitHub username của bạn
         $this->github_repo = 'echbay-shopee-link'; // Thay bằng repository name
-        $this->version = '1.0.0'; // Version hiện tại
+        $this->version = $this->get_current_version(); // Lấy version từ file VERSION
 
         add_filter('pre_set_site_transient_update_plugins', array($this, 'check_for_update'));
         add_filter('plugins_api', array($this, 'plugin_info'), 10, 3);
@@ -104,54 +104,105 @@ class EchBayShopeeLink_GitHub_Updater
         );
     }
 
+    private function get_current_version()
+    {
+        $version_file = __DIR__ . '/VERSION';
+        if (file_exists($version_file)) {
+            return trim(file_get_contents($version_file));
+        }
+        return '1.0.0'; // Fallback version
+    }
+
     private function get_remote_version()
     {
-        $api_url = "https://api.github.com/repos/{$this->github_user}/{$this->github_repo}/releases/latest";
+        // Kiểm tra cache trước
+        $cache_key = 'echbay_shopee_link_remote_version';
+        $cached_version = get_transient($cache_key);
+
+        if ($cached_version !== false) {
+            return $cached_version;
+        }
+
+        $api_url = "https://raw.githubusercontent.com/{$this->github_user}/{$this->github_repo}/main/VERSION";
         $response = wp_remote_get($api_url);
 
         if (is_wp_error($response)) {
+            // Cache phiên bản hiện tại nếu không kết nối được
+            set_transient($cache_key, $this->version, 30 * MINUTE_IN_SECONDS);
             return $this->version;
         }
 
         $body = wp_remote_retrieve_body($response);
-        $data = json_decode($body, true);
+        $remote_version = trim($body);
 
-        if (isset($data['tag_name'])) {
-            return ltrim($data['tag_name'], 'v');
+        if (!empty($remote_version) && preg_match('/^\d+\.\d+\.\d+$/', $remote_version)) {
+            // Cache phiên bản remote trong 1 giờ
+            set_transient($cache_key, $remote_version, HOUR_IN_SECONDS);
+            return $remote_version;
         }
 
+        // Cache phiên bản hiện tại nếu không parse được
+        set_transient($cache_key, $this->version, 30 * MINUTE_IN_SECONDS);
         return $this->version;
     }
 
     private function get_changelog()
     {
-        $api_url = "https://api.github.com/repos/{$this->github_user}/{$this->github_repo}/releases";
+        // Kiểm tra cache trước
+        $cache_key = 'echbay_shopee_link_changelog';
+        $cached_changelog = get_transient($cache_key);
+
+        if ($cached_changelog !== false) {
+            return $cached_changelog;
+        }
+
+        // Lấy changelog từ README.md trên GitHub
+        $api_url = "https://raw.githubusercontent.com/{$this->github_user}/{$this->github_repo}/main/README.md";
         $response = wp_remote_get($api_url);
 
         if (is_wp_error($response)) {
-            return 'Không thể tải changelog từ GitHub.';
+            $fallback = 'Không thể tải changelog từ GitHub.';
+            // Cache lỗi trong 15 phút
+            set_transient($cache_key, $fallback, 15 * MINUTE_IN_SECONDS);
+            return $fallback;
         }
 
         $body = wp_remote_retrieve_body($response);
-        $releases = json_decode($body, true);
 
-        if (empty($releases)) {
-            return 'Chưa có release nào trên GitHub.';
+        if (empty($body)) {
+            $fallback = 'Chưa có changelog nào trên GitHub.';
+            // Cache lỗi trong 15 phút
+            set_transient($cache_key, $fallback, 15 * MINUTE_IN_SECONDS);
+            return $fallback;
         }
 
-        $changelog = '<h3>Changelog</h3>';
-        foreach (array_slice($releases, 0, 5) as $release) {
-            $version = ltrim($release['tag_name'], 'v');
-            $date = date('Y-m-d', strtotime($release['published_at']));
-            $notes = !empty($release['body']) ? $release['body'] : 'Không có ghi chú cho phiên bản này.';
-
-            $changelog .= "<h4>Version {$version} ({$date})</h4>";
-            $changelog .= '<p>' . nl2br(esc_html($notes)) . '</p>';
+        // Tìm phần changelog trong README
+        $changelog_section = '';
+        if (preg_match('/## Changelog\s*(.*?)(?=##|$)/s', $body, $matches)) {
+            $changelog_section = $matches[1];
+        } else {
+            $changelog_section = 'Xem chi tiết tại: https://github.com/' . $this->github_user . '/' . $this->github_repo;
         }
+
+        $changelog = '<h3>Changelog</h3>' . wpautop($changelog_section);
+
+        // Cache changelog trong 2 giờ
+        set_transient($cache_key, $changelog, 2 * HOUR_IN_SECONDS);
 
         return $changelog;
     }
+
+    /**
+     * Xóa cache để force check version mới
+     */
+    public function clear_cache()
+    {
+        delete_transient('echbay_shopee_link_remote_version');
+        delete_transient('echbay_shopee_link_changelog');
+    }
 }
 
-// Khởi tạo GitHub updater
-new EchBayShopeeLink_GitHub_Updater(__FILE__);
+// Kiểm tra nếu đang ở trang plugins.php
+if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/plugins.php') !== false) {
+    new EchBayShopeeLink_GitHub_Updater(__FILE__);
+}
