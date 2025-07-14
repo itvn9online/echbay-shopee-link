@@ -102,6 +102,12 @@ Nếu có vấn đề, kiểm tra:
 
 ## Changelog
 
+### Version 1.0.1 (2025-07-14)
+
+- Cập nhật phiên bản để test tính năng auto-update
+- Tối ưu hóa code GitHub updater
+- Cải thiện cache mechanism
+
 ### Version 1.0.0 (2025-07-14)
 
 - Phiên bản đầu tiên

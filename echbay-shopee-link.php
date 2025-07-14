@@ -4,7 +4,7 @@
  * Plugin Name: EchBay Shopee Link Simple
  * Plugin URI: https://echbay.com
  * Description: Plugin đơn giản để nhúng tiêu đề sản phẩm vào trang chi tiết sản phẩm WooCommerce
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: EchBay
  * Author URI: https://echbay.com
  * Requires at least: 5.0
