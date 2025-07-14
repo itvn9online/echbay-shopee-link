@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Add Shopee quick buy button to single product page
-add_action('woocommerce_single_product_summary', 'echbay_shopee_link_button', 33);
+add_action('woocommerce_after_add_to_cart_button', 'echbay_shopee_link_button', 10);
 function echbay_shopee_link_button()
 {
     // kiểm tra function get_field() có tồn tại không
