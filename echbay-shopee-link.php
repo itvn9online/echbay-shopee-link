@@ -4,7 +4,7 @@
  * Plugin Name: EchBay Shopee Link Simple
  * Plugin URI: https://echbay.com
  * Description: Plugin đơn giản để nhúng tiêu đề sản phẩm vào trang chi tiết sản phẩm WooCommerce
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: EchBay
  * Author URI: https://echbay.com
  * Requires at least: 5.0
@@ -20,7 +20,8 @@ if (!defined('ABSPATH')) {
 }
 
 // Add Shopee quick buy button to single product page
-add_action('woocommerce_after_add_to_cart_button', 'echbay_shopee_link_button', 10);
+add_action('woocommerce_single_product_summary', 'echbay_shopee_link_button', 35);
+// add_action('woocommerce_after_add_to_cart_button', 'echbay_shopee_link_button', 10);
 function echbay_shopee_link_button()
 {
     // kiểm tra function get_field() có tồn tại không
